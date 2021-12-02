@@ -1,0 +1,234 @@
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Настройки и команды
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Разные команды
+
+lsblk										посмотреть структуру дисков
+apt-get update									проверка обновлений
+su username									смена пользователя
+w										список активных пользователей
+netstat -ntulp									локальные порты
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Hostname
+
+hostname										проверить наименование хоста
+hostname new_name		 						установить новое имя хоста 
+nano /etc/hostname								файл конфигурации
+nano /etc/hosts									файл конфигурации
+sudo reboot									перезагрузка компьютера
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Sudo
+
+app install sudo									установка
+nano /etc/sudoers								файл настройки
+Defaults !root_sudo								суперпользователь не может выполнять sudo
+Defaults passwd_tries=3								количество попыток ввода пароля
+Defaults insults									случайные сообщения при неправильном вводе пароля
+Defaults badpass_message=“сообщение"						свое сообщение при неправильном вводе пароля
+Defaults passprompt="Ваш пароль:"							приглашение ввода пароля
+Defaults logfile=/var/log/sudo							запись логов
+Defaults requiretty								включение TTY
+Defaults secure_path=“”								пути
+----------------------------------------------------------------------------------------------------------------------------------------------------
+SSH
+
+sudo apt install openssh-server ssh						установить SSH сервер 
+sudo systemctl start sshd								запуск SSH сервера
+sudo systemctl restart sshd							перезапуск SSH сервера
+sudo systemctl status sshd							статус
+nano /etc/ssh/sshd_config								файл конфигурации
+
+PermitRootLogin no								запрет root
+Port												проброс портов
+AllowUsers user_name								разрешение подключения для пользователя
+----------------------------------------------------------------------------------------------------------------------------------------------------
+AppArmor
+
+sudo apt install apparmor-utils apparmor-profiles					установка дополнительных компонентов
+apparmor_status									статус
+sudo aa-enforce название профиля							принудительное выполнение
+sudo aa-comlain название профиля							режим обучения
+----------------------------------------------------------------------------------------------------------------------------------------------------
+UFW
+
+sudo apt-get install ufw								установка ufw 
+sudo ufw status verbose								status ufw
+sudo ufw enable									включить брандмауэр UFW
+sudo ufw disable									отключить брандмауэр UFW
+sudo ufw default deny incoming							запрещает все входящие подключения
+sudo ufw default allow outgoing							разрешает исходящие подключения
+sudo ufw allow port_name(4242)							открыть порт для входящих подключений
+sudo ufw status numbered								вывести нумерованный список текущих правил
+sudo ufw delete "номер_правила"							удалить правило
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Управление пользователями и группами
+
+adduser username									создать нового пользователя
+deluser username									удалить пользователя
+sudo -lU username								какими привилегиями обладает конкретный пользователь
+adduser username groupname							добавить в группу пользователя
+usermod -aG groupname username							добавить пользователя в группу
+getent group groupname								проверить наличие пользователя в группе
+groups username									проверить все группы пользователя
+id -nG username									проверить все группы пользователя
+cat /etc/group									вывести все группы из каталога групп вместе с системными
+groupadd groupname								создать новую группу
+sudo groupdel groupname								удалить группу
+delgroup groupname								удалить группу
+sudo deluser username groupname							удалить пользьвателя из группы
+sudo usermod -G group1,group2 username						удалить пользователя из (перечисление) групп
+sudo usermod -G username								удалить пользователя из всех групп
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Cron (только root)
+
+crontab -e									редактирования или создания файла расписания для текущего пользователя
+*/10 * * * * ./monitoring.sh							срабатывание каждые 10 минут
+crontab -l									вывод существующих задач в расписании пользователя
+crontab -r									удаление файла расписания текущего пользователя
+crontab -u username								работа с расписаниями указанных пользователей
+
+sudo service cron reload								перезапустите сервис
+/etc/init.d/cron stop								остановить сервис
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Управление службами
+
+systemctl list-unit-files								посмотреть список служб
+
+systemctl list-unit-files --type service						только службы linux
+
+sudo systemctl start application.service
+sudo systemctl stop application
+sudo systemctl status application
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+Политика паролей
+
+sudo chage -l user								информация о текущих настройках, лучший вариант
+sudo chage -m2 user								минимальное количество дней между сменой пароля
+sudo chage -M30 user								максимальное количество дней между сменой пароля
+sudo chage -W7 user	 							количество дней с предупреждением перед деактивацией пароля
+sudo passwd									смена пароля
+
+nano /etc/login.defs								файл конфигурации данный по паролям
+
+PASS_MAX_DAYS  30								Срок действия пароля 
+PASS_MIN_DAYS 2									Минимальное количество дней между сменами пароля 
+PASS_WARN_AGE 7									Количество дней предупреждения до истечения срока действия пароля
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Требования к паролю
+
+apt-get -y install libpam-cracklib						установить пакет libpam-cracklib
+nano /etc/pam.d/common-password							файл настройки паролей
+
+password requisite pam_cracklib.so с флагами:
+
+enforce_for_root									проверка применима и к root
+minlen=10 									минимальная длина пароля
+ucredit=-1 									минимум одна буква в верхнем регистре
+lcredit=-1									минимум одна буква в нижнем регистре
+dcredit=-1 									минимум одна цифра
+maxrepeat=3 									пароль не должен содержать более 3-х идущих подряд одинаковых символов
+reject_username 									пароль не должен включать имя пользователя
+difok=7 										количество символов в пароле, которые НЕ должны присутствовать в старом пароле
+----------------------------------------------------------------------------------------------------------------------------------------------------
+
+Полезная информация
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Debian и CentOS
+
+1. https://losst.ru/chto-luchshe-debian-ili-centos
+2. https://www.openlogic.com/blog/centos-vs-debian
+----------------------------------------------------------------------------------------------------------------------------------------------------
+LVM
+
+1. https://habr.com/ru/post/67283/
+2. http://xgu.ru/wiki/LVM
+3. https://blog.trukhin.com/%D0%B4%D0%BE%D0%B1%D0%B0%D0%B2%D0%BB%D1%8F%D0%B5%D0%BC-%D0%BC%D0%B5%D1%81%D1%82%D0%B0-%D0%BD%D0%B0-%D0%B4%D0%B8%D1%81%D0%BA%D0%B5-%D0%B4%D0%BB%D1%8F-linux-%D1%81%D0%B5%D1%80%D0%B2%D0%B5%D1%80%D0%B0-%D1%81-lvm-%D0%B0-%D0%B7%D0%B0%D0%BE%D0%B4%D0%BD%D0%BE-%D0%B8-%D1%80%D0%B0%D0%B7%D0%B1%D0%B8%D1%80%D0%B0%D0%B5%D0%BC%D1%81%D1%8F-%D1%81-logical-volume-manager-e28de63bebc2
+
+----------------------------------------------------------------------------------------------------------------------------------------------------
+SeLinux и AppArmpr
+
+1. https://xakep.ru/2010/10/04/53424/#toc02
+2. https://linuxhint.com/selinux_debian_10/
+3. https://wiki.debian.org/AppArmor/HowToUse
+4. https://losst.ru/nastrojka-apparmor-v-ubuntu-16-04
+5. https://xakep.ru/2010/10/04/53424/#toc03.
+6. https://habr.com/ru/company/ruvds/blog/532988/
+7. https://habr.com/en/company/ruvds/blog/523872/
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Apt и Aptitude
+
+1. https://habr.com/ru/post/74506/
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Sudo
+
+1. https://losst.ru/nastrojka-sudo-v-linux
+2. https://www.hostinger.ru/rukovodstva/sudo-i-sudoers-fail-kak-ispolzovat
+3. https://www.8host.com/blog/redaktirovanie-fajla-sudoers-v-ubuntu-i-centos/
+4. https://sukachoff.ru/router/sudo-opisanie-komandy-polzuemsya-komandami-sudo-su-nastroika-su
+5. https://www.tecmint.com/sudoers-configurations-for-setting-sudo-in-linux/
+6. https://qastack.ru/server/111064/sudoers-how-to-disable-requiretty-per-user
+7. https://wiki.archlinux.org/title/Sudo_(%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9)
+8. https://wiki.archlinux.org/title/Sudo_(%D0%A0%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9)
+9. https://linux-notes.org/ispravlyaem-oshibku-sudo-sorry-you-must-have-a-tty-to-run-sudo/
+----------------------------------------------------------------------------------------------------------------------------------------------------
+SSH
+
+1. https://firstvds.ru/technology/kak-pomenyat-izmenit-port-u-ssh-servera
+2. https://system-admins.ru/kak-izmenit-port-ssh-na-linux-ili-unix-servere/
+----------------------------------------------------------------------------------------------------------------------------------------------------
+UFW
+
+1. https://losst.ru/nastrojka-ufw-ubuntu
+2. https://1cloud.ru/help/security/ispolzovanie-utility-ufw-na-inux
+3. https://blog.sedicomm.com/2018/07/06/kak-nastroit-brandmauer-ufw-na-ubuntu-i-debian/
+4. https://losst.ru/kak-zakryt-port-iptables
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Bash
+
+1. https://qastack.ru/unix/218074/how-to-know-number-of-cores-of-a-system-in-linux
+2. https://losst.ru/ispolzovanie-awk-v-linux
+3. https://andreyex.ru/linux/komanda-wall-v-linux/
+4. https://man7.org/linux/man-pages/man1/wall.1.html
+5. https://goto-linux.com/2019/9/5/%D0%BA%D0%B0%D0%BA-%D0%BF%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%B8%D1%82%D1%8C-%D0%B8-%D0%BA%D0%BE%D0%BD%D1%82%D1%80%D0%BE%D0%BB%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D1%82%D1%8C-%D0%B7%D0%B0%D0%B3%D1%80%D1%83%D0%B7%D0%BA%D1%83-%D0%BF%D1%80%D0%BE%D1%86%D0%B5%D1%81%D1%81%D0%BE%D1%80%D0%B0-%D0%B2-linux/
+6. https://blog.pridybailo.com/%D0%BF%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B0-%D1%83%D1%81%D0%BB%D0%BE%D0%B2%D0%B8%D0%B9-%D0%B2-bash/
+7. https://linuxize.com/post/how-to-list-users-in-linux/
+8. 
+----------------------------------------------------------------------------------------------------------------------------------------------------
+awk и grep 
+
+1. https://habr.com/ru/company/ruvds/blog/327754/
+2. https://habr.com/ru/post/229501/
+3. https://www.opennet.ru/man.shtml?topic=grep&category=1
+4. https://wiki.merionet.ru/servernye-resheniya/89/16-poleznyh-primerov-grep/
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Cron
+
+1. https://debian-handbook.info/browse/ru-RU/stable/sect.task-scheduling-cron-atd.html
+2. https://blog.sedicomm.com/2017/07/24/kak-dobavit-zadanie-v-planirovshhik-cron-v-linux-unix/
+3. https://qastack.ru/superuser/232144/how-to-stop-a-currently-running-cron-job
+4. https://losst.ru/chto-takoe-demony-v-linux
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Управление пользователями и группами
+
+1. https://blog.bissquit.com/unix/debian-shpargalka-sisadmina-operatsii-s-pol/
+2. https://manpages.debian.org/jessie/adduser/delgroup.8.ru.html
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Политика паролей
+
+1. https://habr.com/ru/company/otus/blog/448996/
+2. https://toadmin.ru/%D0%BA%D0%B0%D0%BA-%D0%B7%D0%B0%D1%81%D1%82%D0%B0%D0%B2%D0%B8%D1%82%D1%8C-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D0%B5%D0%B9-%D0%B8%D0%B7%D0%BC%D0%B5%D0%BD%D0%B8%D1%82/
+3. https://itsecforu.ru/2018/06/13/%D0%BA%D0%B0%D0%BA-%D0%B7%D0%B0%D1%81%D1%82%D0%B0%D0%B2%D0%B8%D1%82%D1%8C-%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D0%B5%D0%B9-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7/
+4. https://www.opennet.ru/man.shtml?topic=chage&category=1&russian=0
+5. https://www.altlinux.org/Неповторяемость_пароля
+----------------------------------------------------------------------------------------------------------------------------------------------------
+Управление службами
+
+1. https://losst.ru/upravlenie-sluzhbami-linux
+----------------------------------------------------------------------------------------------------------------------------------------------------
+WordPress
+
+1. https://websiteforstudents.com/install-wordpress-on-ubuntu-16-04-lts-with-lighttpd-mariadb-and-php-7-1-support/
+2. https://websiteforstudents.com/installing-wordpress-lighttpd-mysql-php-support-ubuntu-17-04/
+----------------------------------------------------------------------------------------------------------------------------------------------------
